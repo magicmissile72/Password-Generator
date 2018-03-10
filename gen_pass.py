@@ -11,9 +11,9 @@ complex_c = ["strong" , "a-z,A-Z,0-9"]
 complex_d = ["complex" , "a-z,A-Z,0-9,sym"]
 # ASCII Dec: 33 - 47, 58 - 64, 91 - 96, 123 - 126
 #
+# defaults
 pass_complex = complex_d[1]
 pass_type = complex_d[0]
-#
 pass_length = 12
 pass_number = 5
 #
@@ -52,6 +52,7 @@ def change_length():
     if new_length == False:
         return
     elif new_length < 10:
+        print()
         print("Your password is too short...")
         test = input("Are you sure(y/n)?")
         if test == "n":
@@ -69,13 +70,14 @@ def change_length():
         print("aborting...")
         return
     else:
+        print()
         print("updating password length...")
         update_length(new_length)
 # -----------------------------------
 def update_length(new_length):
     global pass_length
     pass_length = new_length
-    print("new password length is ", pass_length)
+    print("The new password length is ", pass_length)
 # -----------------------------------
 def change_complexity():
     global pass_complex, pass_type
@@ -112,14 +114,17 @@ def change_complexity():
         return
 # -----------------------------------
 def number_to_generate():
+    print()
     print("Update the number of the passwords to generate...")
     new_number = get_number()
     if new_number == False:
         return
-    elif new_number >= 16:
+    elif new_number >= 33:
+        print()
         print("That is too many...")
     else:
-        print("updating the number of passwords to generate...")
+        print()
+        print("Updating the number of passwords to generate...")
         update_num_to_gen(new_number)
 # -----------------------------------
 def update_num_to_gen(new_number):
@@ -127,47 +132,71 @@ def update_num_to_gen(new_number):
     pass_number = new_number
     print("Generate ", pass_number, " passwords...")
 # -----------------------------------
-def generate_passwords(p_type, p_length, p_number):
-    if p_type == "simple":
-        number = int(random.randint(97, 122))
-        # 97 - 122
-        print(number)
-    elif p_type == "better":
-        number = int(random.randint(65, 122))
-        # 65 - 90, 97 - 122
-        print(number)
-    elif p_type == "strong":
-        number = int(random.randint(48, 122))
-        # 48 - 57, 65 - 90, 97 - 122
-        print(number)
-    elif p_type == "complex":
-        number = int(random.randint(33, 126))
-        # 33 - 126
-        print(number)
-        # Working here...trying to get random numbers...
+def get_rand_num():
+    number = int(random.randint(33, 126))
+    return number
+# -----------------------------------
+def build_pass(number):
+    global password
+    password = password + repr(chr(number))
+# -----------------------------------
+def fix_pass(password):
+    fixed_pass = ''
+    for item in password:
+        item = item.replace("'", "") 
+        fixed_pass = fixed_pass + item
+    return fixed_pass
+# ----------------------------------- 
+def generate_passwords(p_type, p_length):
+    final_pass = ''
+    count = 0
+    while count < p_length:
+        number = get_rand_num()
+        if p_type == "simple" and (97 <= number <= 122):
+            # ASCII 97 - 122
+            build_pass(number)
+            count += 1
+        elif p_type == "better" and ((65 <= number <= 90) or (97 <= number <= 122)):
+            # ASCII 65 - 90, 97 - 122
+            build_pass(number)
+            count += 1
+        elif p_type == "strong" and ((48 <= number <= 57) or (65 <= number <= 90) or (97 <= number <= 122)):
+            # ASCII 48 - 57, 65 - 90, 97 - 122
+            build_pass(number)
+            count += 1
+        elif p_type == "complex" and (33 <= number <= 126):
+            # ASCII 33 - 126
+            build_pass(number)
+            count += 1
+        else:
+            continue
+    final_pass = fix_pass(password)
+    return final_pass
 #
-# ------------ MAIN LOOP ------------
+#
+# -------------- MAIN LOOP --------------
 #
 while True:
+    global password
     print_menu()
     choice = input("Choose wisely: ")
     if choice == "":
         print()
     elif choice == '1':
-        print("test: updating the password length...")
         change_length()
     elif choice == '2':
-        print(choice)
-        print("test: updating the password complexity...")
         change_complexity()
     elif choice == '3':
-        print(choice)
-        print("test: updating the number of passwords to generate...")
         number_to_generate()
     elif choice == '4':
-        print(choice)
-        print("test: generating passwords...")
-        generate_passwords(pass_type, pass_length, pass_number)
+        count = 0
+        while count < pass_number:
+            password = ''
+            Final_Pass = generate_passwords(pass_type, pass_length)
+            count_times = count + 1
+            print(f"Password # {count_times} is: {Final_Pass}")
+            Final_Pass = ''
+            count += 1
     elif choice == 'q':
         print(choice)
         print("Exiting...")
